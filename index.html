@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7490.org - Twitter Card Showcase</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/details-element-polyfill@2.4.0/dist/details-element-polyfill.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/container-query-polyfill@1.0.2/dist/container-query-polyfill.min.js"></script>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>7490.org</h1>
+    <p>Collect and Score Twitter Accounts Like Pokémon Cards</p>
+  </header>
+  <main>
+    <section class="carousel-container">
+      <noscript>
+        <p>Please enable JavaScript to view the Twitter card showcase. Alternatively, view our <a href="/static-list.html">static list of accounts</a>.</p>
+      </noscript>
+      <div class="packets-carousel"></div>
+      <div class="carousel-controls">
+        <button id="prev-btn" aria-label="Previous Packet">←</button>
+        <button id="next-btn" aria-label="Next Packet">→</button>
+      </div>
+    </section>
+    <section class="packet-details" id="packet-details"></section>
+  </main>
+  <footer>
+    <p>© 2025 7490.org. All rights reserved.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
