@@ -1,0 +1,240 @@
+{
+  "packets": [
+    {
+      "genre": "Meme",
+      "image": "workes copy.jpeg",
+      "description": "Hilarious and viral content creators.",
+      "accounts": [
+        {
+          "handle": "tragicbirdapp",
+          "pfp": "bird.jpg",
+          "score": 7.2,
+          "rarity": "Rare",
+          "scores": {
+            "Originality": 8,
+            "Aesthetic": 7,
+            "Motion": 7,
+            "Trolling": 6,
+            "Shitposting": 8,
+            "Community": 6,
+            "Consistency": 8,
+            "Trendsetting": 7,
+            "Versatility": 7,
+            "Following Ratio": 8
+          }
+        },
+        {
+          "handle": "murdoink",
+          "pfp": "murdo.gif",
+          "score": 5.9,
+          "rarity": "Common",
+          "scores": {
+            "Originality": 7,
+            "Aesthetic": 6,
+            "Motion": 5,
+            "Trolling": 6,
+            "Shitposting": 7,
+            "Community": 4,
+            "Consistency": 6,
+            "Trendsetting": 5,
+            "Versatility": 6,
+            "Following Ratio": 7
+          }
+        }
+      ]
+    },
+    {
+      "genre": "Anime",
+      "image": "akiraaaa copy.jpg",
+      "description": "Anime enthusiasts and fan accounts.",
+      "accounts": [
+        {
+          "handle": "enderman",
+          "pfp": "ender.jpg",
+          "score": 6.1,
+          "rarity": "Epic",
+          "scores": {
+            "Originality": 7,
+            "Aesthetic": 6,
+            "Motion": 6,
+            "Trolling": 5,
+            "Shitposting": 6,
+            "Community": 5,
+            "Consistency": 7,
+            "Trendsetting": 6,
+            "Versatility": 6,
+            "Following Ratio": 7
+          }
+        }
+      ]
+    },
+    {
+      "genre": "Crypto",
+      "image": "get money copy.jpeg",
+      "description": "Blockchain and cryptocurrency influencers.",
+      "accounts": [
+        {
+          "handle": "dereknlmbx",
+          "pfp": "derek.gif",
+          "score": 5.4,
+          "rarity": "Common",
+          "scores": {
+            "Originality": 6,
+            "Aesthetic": 6,
+            "Motion": 5,
+            "Trolling": 4,
+            "Shitposting": 5,
+            "Community": 5,
+            "Consistency": 6,
+            "Trendsetting": 4,
+            "Versatility": 6,
+            "Following Ratio": 7
+          }
+        }
+      ]
+    },
+    {
+      "genre": "Sports",
+      "image": "fame copy.jpeg",
+      "description": "Sports commentary and highlights.",
+      "accounts": [
+        {
+          "handle": "recreating",
+          "pfp": "rec.gif",
+          "score": 6.3,
+          "rarity": "Rare",
+          "scores": {
+            "Originality": 8,
+            "Aesthetic": 7,
+            "Motion": 6,
+            "Trolling": 4,
+            "Shitposting": 5,
+            "Community": 5,
+            "Consistency": 7,
+            "Trendsetting": 6,
+            "Versatility": 7,
+            "Following Ratio": 8
+          }
+        }
+      ]
+    },
+    {
+      "genre": "GIF PFPs",
+      "image": "batmann.gif",
+      "description": "Accounts with animated profile pictures.",
+      "accounts": [
+        {
+          "handle": "weedhitter",
+          "pfp": "weedhitter.gif",
+          "score": 5.9,
+          "rarity": "Common",
+          "scores": {
+            "Originality": 6,
+            "Aesthetic": 5,
+            "Motion": 6,
+            "Trolling": 7,
+            "Shitposting": 8,
+            "Community": 5,
+            "Consistency": 7,
+            "Trendsetting": 4,
+            "Versatility": 5,
+            "Following Ratio": 6
+          }
+        }
+      ]
+    },
+    {
+      "genre": "Stans",
+      "image": "adinnn copy.jpg",
+      "description": "Dedicated fan accounts for celebrities and franchises.",
+      "accounts": [
+        {
+          "handle": "literallymecats",
+          "pfp": "cats.jpg",
+          "score": 6.4,
+          "rarity": "Epic",
+          "scores": {
+            "Originality": 7,
+            "Aesthetic": 8,
+            "Motion": 7,
+            "Trolling": 4,
+            "Shitposting": 6,
+            "Community": 6,
+            "Consistency": 7,
+            "Trendsetting": 5,
+            "Versatility": 6,
+            "Following Ratio": 8
+          }
+        }
+      ]
+    },
+    {
+      "genre": "Music",
+      "image": "ALBUMSS copy.jpeg",
+      "description": "Artists and music-related content.",
+      "accounts": [
+        {
+          "handle": "tinysoulgame",
+          "pfp": "tiny.jpg",
+          "score": 5.9,
+          "rarity": "Legendary",
+          "scores": {
+            "Originality": 9,
+            "Aesthetic": 8,
+            "Motion": 5,
+            "Trolling": 2,
+            "Shitposting": 3,
+            "Community": 6,
+            "Consistency": 6,
+            "Trendsetting": 7,
+            "Versatility": 6,
+            "Following Ratio": 7
+          }
+        }
+      ]
+    },
+    {
+      "genre": "Gimmick",
+      "image": "all we need copy.jpeg",
+      "description": "Unique and quirky themed accounts.",
+      "accounts": [
+        {
+          "handle": "OddSteamReviews",
+          "pfp": "steam.jpg",
+          "score": 7.1,
+          "rarity": "Rare",
+          "scores": {
+            "Originality": 8,
+            "Aesthetic": 6,
+            "Motion": 8,
+            "Trolling": 5,
+            "Shitposting": 7,
+            "Community": 7,
+            "Consistency": 8,
+            "Trendsetting": 6,
+            "Versatility": 7,
+            "Following Ratio": 9
+          }
+        },
+        {
+          "handle": "contextdogs",
+          "pfp": "dogs.jpg",
+          "score": 6.4,
+          "rarity": "Epic",
+          "scores": {
+            "Originality": 7,
+            "Aesthetic": 7,
+            "Motion": 7,
+            "Trolling": 3,
+            "Shitposting": 6,
+            "Community": 7,
+            "Consistency": 8,
+            "Trendsetting": 5,
+            "Versatility": 6,
+            "Following Ratio": 8
+          }
+        }
+      ]
+    }
+  ]
+}
