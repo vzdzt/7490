@@ -6,12 +6,17 @@ if (window.NodeList && !NodeList.prototype.forEach) {
 document.addEventListener('DOMContentLoaded', () => {
   const carousel = document.querySelector('.packets-carousel');
   const packetDetails = document.getElementById('packet-details');
-  const prevBtn = document.getElementById('prev-btn');
-  const nextBtn = document.getElementById('next-btn');
-  let radius = Math.min(window.innerWidth * 0.5, 350); // Smaller radius for better scaling
+  let radius = Math.min(window.innerWidth * 0.4, 300);
   let currentAngle = 0;
   let selectedPacket = null;
   let autoRotateInterval;
+  let currentCarousel = 1;
+  let data;
+  let carouselData = {
+    1: [],
+    2: []
+  };
+  let isCarouselSwitching = false;
 
   // Smooth scroll fallback
   function scrollToElement(element) {
@@ -22,144 +27,158 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function switchCarousel() {
+    if (isCarouselSwitching) return;
+    isCarouselSwitching = true;
+
+    const newCarousel = currentCarousel === 1 ? 2 : 1;
+    const toggleBtn = document.getElementById('toggle-btn');
+    if (toggleBtn) {
+      toggleBtn.textContent = newCarousel === 1 ? 'Show More' : 'Show Less';
+    }
+
+    function animHandler() {
+      if (carousel.style.animation.includes('carouselSwoop')) {
+        carousel.innerHTML = '';
+        renderPackets(carouselData[newCarousel]);
+        positionPackets();
+        carousel.style.animation = 'carouselSwoopIn 1s ease-in-out';
+        currentCarousel = newCarousel;
+      } else if (carousel.style.animation.includes('carouselSwoopIn')) {
+        isCarouselSwitching = false;
+        carousel.style.animation = '';
+        carousel.removeEventListener('animationend', animHandler);
+      }
+    }
+
+    if (carousel) {
+      carousel.addEventListener('animationend', animHandler);
+      carousel.style.animation = 'carouselSwoop 1s ease-in-out';
+    }
+  }
+
   // Load data
   fetch('data.json')
     .then(response => response.json())
-    .then(data => {
-      renderPackets(data.packets);
+    .then(jsonData => {
+      data = jsonData;
+      // Split packets into two carousels
+      data.packets.forEach(packet => {
+        if (['Stans', 'Gimmick', 'Music'].includes(packet.genre)) {
+          carouselData[2].push(packet);
+        } else {
+          carouselData[1].push(packet);
+        }
+      });
+
+      renderPackets(carouselData[1]);
       positionPackets();
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         startAutoRotate();
       }
+
+      // Add toggle button listener
+      const toggleBtn = document.getElementById('toggle-btn');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => switchCarousel());
+      }
+
+      // Touch support for mobile
+      if (carousel) {
+        let touchStartX = 0;
+        carousel.addEventListener('touchstart', (e) => {
+          touchStartX = e.touches[0].clientX;
+        });
+
+        carousel.addEventListener('touchmove', (e) => {
+          e.preventDefault();
+          const touchX = e.touches[0].clientX;
+          const deltaX = touchX - touchStartX;
+          rotateCarousel(deltaX > 0 ? 0.05 : -0.05);
+          touchStartX = touchX;
+        });
+
+        // Mouse wheel scrolling
+        carousel.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          rotateCarousel(e.deltaY > 0 ? -0.1 : 0.1);
+        });
+      }
     })
     .catch(error => {
       console.error('Error loading data:', error);
-      carousel.innerHTML = '<p>Failed to load data. Please try again later.</p>';
+      if (carousel) {
+        carousel.innerHTML = '<p>Failed to load data. Please try again later.</p>';
+      }
     });
-
-  // Update radius on resize
-  window.addEventListener('resize', () => {
-    const newRadius = Math.min(window.innerWidth * 0.5, 350);
-    if (radius !== newRadius) {
-      radius = newRadius;
-      positionPackets();
-    }
-  });
-
-  // Mouse wheel scrolling
-  carousel.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    rotateCarousel(e.deltaY > 0 ? -0.1 : 0.1);
-  });
-
-  // Mobile carousel initialization
-  function initMobileCarousel() {
-    if (window.innerWidth > 600) return;
-    const cards = document.querySelectorAll('.packet-card');
-    cards.forEach(card => {
-      card.classList.add('visible');
-      card.style.transform = 'none';
-      card.style.opacity = '1';
-    });
-  }
-
-  // Listen for scroll events to handle snap points
-  carousel.addEventListener('scroll', () => {
-    if (window.innerWidth > 600) return;
-    const cards = document.querySelectorAll('.packet-card');
-    if (!cards.length) return;
-    
-    requestAnimationFrame(() => {
-      const cardWidth = cards[0].offsetWidth + 24; // Include gap
-      const scrollPosition = carousel.scrollLeft;
-      const currentIndex = Math.round(scrollPosition / cardWidth);
-      
-      cards.forEach((card, index) => {
-        if (index === currentIndex) {
-          card.classList.add('active');
-        } else {
-          card.classList.remove('active');
-        }
-      });
-    });
-  });
-
-  function handleMobileLayout() {
-    if (window.innerWidth <= 600) {
-      initMobileCarousel();
-    }
-  }
-
-  window.addEventListener('resize', handleMobileLayout);
-
-  // Carousel controls
-  prevBtn.addEventListener('click', () => rotateCarousel(1));
-  nextBtn.addEventListener('click', () => rotateCarousel(-1));
-
-  // Keyboard navigation
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') rotateCarousel(-1);
-    else if (e.key === 'ArrowLeft') rotateCarousel(1);
-  });
 
   function renderPackets(packets) {
+    if (!carousel || !packets) return;
+
     carousel.innerHTML = '';
-    packets.forEach(packet => {
+    const isMobile = window.innerWidth <= 600;
+    const visibleCount = isMobile ? 5 : packets.length;
+    const rotationSet = Math.floor(currentAngle / (2 * Math.PI));
+
+    packets.forEach((packet, index) => {
+      if (isMobile && rotationSet % 2 === 1) {
+        index = (index + Math.floor(packets.length / 2)) % packets.length;
+      }
+
       const packetCard = document.createElement('div');
       packetCard.classList.add('packet-card');
       packetCard.setAttribute('tabindex', '0');
       packetCard.innerHTML = `
-        <h2>${packet.genre}</h2>
-        <img src="${packet.image}" alt="${packet.genre} packet">
-        <p>${packet.description}</p>
+        <h2>${packets[index].genre}</h2>
+        <img src="${packets[index].image}" alt="${packets[index].genre} packet">
+        <p>${packets[index].description}</p>
       `;
-      packetCard.addEventListener('click', () => selectPacket(packet, packetCard));
+      packetCard.addEventListener('click', () => selectPacket(packets[index], packetCard));
       packetCard.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
-          selectPacket(packet, packetCard);
+          selectPacket(packets[index], packetCard);
         }
       });
-      carousel.appendChild(packetCard);
+      if (!isMobile || (isMobile && index < visibleCount)) {
+        carousel.appendChild(packetCard);
+      }
     });
   }
 
   function positionPackets() {
-  const packetCards = document.querySelectorAll('.packet-card');
-  const totalPackets = packetCards.length;
-  const angleStep = (2 * Math.PI) / totalPackets;
+    const packetCards = document.querySelectorAll('.packet-card');
+    const totalPackets = packetCards.length;
+    const angleStep = (2 * Math.PI) / totalPackets;
 
-  if (window.innerWidth <= 600) {
-    packetCards.forEach(card => {
-      card.style.transform = 'none';
-      card.style.opacity = '1';
+    packetCards.forEach((card, index) => {
+      const angle = index * angleStep + currentAngle;
+      const x = Math.sin(angle) * radius;
+      const z = Math.cos(angle) * radius;
+      card.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${angle * (180/Math.PI)}deg)`;
       card.classList.add('visible');
+
+      const normalizedZ = (z + radius) / (2 * radius);
+      card.style.opacity = normalizedZ * 0.5 + 0.5;
     });
-    return;
   }
-
-  packetCards.forEach((card, index) => {
-    const angle = index * angleStep + currentAngle;
-    const x = Math.sin(angle) * radius;
-    const z = Math.cos(angle) * radius;
-    card.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${angle * (180/Math.PI)}deg)`;
-    card.classList.add('visible');
-
-    const normalizedZ = (z + radius) / (2 * radius);
-    card.style.opacity = normalizedZ * 0.5 + 0.5;
-  });
-}
 
   function rotateCarousel(direction) {
     currentAngle += direction * (Math.PI / 8);
-    positionPackets();
+    if (window.innerWidth <= 600) {
+      const fullRotation = 2 * Math.PI;
+      if (Math.abs(currentAngle) >= fullRotation) {
+        renderPackets(carouselData[currentCarousel]);
+      }
+    }
+    requestAnimationFrame(() => positionPackets());
   }
 
   function startAutoRotate() {
     let lastTime = null;
     function rotate(timestamp) {
       if (!lastTime) lastTime = timestamp;
-      if (timestamp - lastTime >= 100) {
-        rotateCarousel(-0.25);
+      if (timestamp - lastTime >= 150) {
+        rotateCarousel(-0.15);
         lastTime = timestamp;
       }
       autoRotateInterval = requestAnimationFrame(rotate);
@@ -172,13 +191,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function selectPacket(packet, packetCard) {
+    if (!packet || !packetCard || !packetDetails) return;
+
     stopAutoRotate();
 
     // Deselect previous packet
-    if (selectedPacket) {
-      const prevCard = document.querySelector('.packet-card.selected');
-      if (prevCard) prevCard.classList.remove('selected');
-    }
+    const prevCard = document.querySelector('.packet-card.selected');
+    if (prevCard) prevCard.classList.remove('selected');
 
     // Select new packet
     packetCard.classList.add('selected');
@@ -187,9 +206,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render packet details
     packetDetails.classList.add('active');
     packetDetails.innerHTML = `
+      <button class="close-btn" onclick="document.getElementById('packet-details').classList.remove('active')">×</button>
       <h2>${packet.genre} Collection</h2>
       <div class="accounts-grid"></div>
     `;
+
     const accountsGrid = packetDetails.querySelector('.accounts-grid');
     packet.accounts.forEach((account, index) => {
       const accountCard = document.createElement('article');
@@ -227,13 +248,51 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollToElement(packetDetails);
   }
 
-  // Stop rotation on hover
-  carousel.addEventListener('mouseenter', stopAutoRotate);
-
-  // Resume rotation on mouse leave
-  carousel.addEventListener('mouseleave', () => {
-    if (!selectedPacket && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      startAutoRotate();
+  // Update radius on resize
+  window.addEventListener('resize', () => {
+    const newRadius = window.innerWidth <= 600 ? Math.min(window.innerWidth * 0.15, 100) : Math.min(window.innerWidth * 0.35, 300);
+    if (radius !== newRadius) {
+      radius = newRadius;
+      positionPackets();
     }
   });
+
+  // Stop rotation on hover
+  if (carousel) {
+    carousel.addEventListener('mouseenter', stopAutoRotate);
+    // Resume rotation on mouse leave
+    carousel.addEventListener('mouseleave', () => {
+      if (!selectedPacket && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        startAutoRotate();
+      }
+    });
+  }
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    const cards = document.querySelectorAll('.packet-card');
+    if (e.key === 'ArrowRight') {
+      rotateCarousel(-1);
+      cards.forEach(card => {
+        card.style.animation = 'flutter 0.5s ease-in-out';
+        setTimeout(() => card.style.animation = '', 500);
+      });
+    } else if (e.key === 'ArrowLeft') {
+      rotateCarousel(1);
+      cards.forEach(card => {
+        card.style.animation = 'flutter 0.5s ease-in-out';
+        setTimeout(() => card.style.animation = '', 500);
+      });
+    }
+  });
+
+  // Carousel controls
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => rotateCarousel(1));
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => rotateCarousel(-1));
+  }
 });
