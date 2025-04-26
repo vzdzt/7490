@@ -52,62 +52,45 @@ document.addEventListener('DOMContentLoaded', () => {
     rotateCarousel(e.deltaY > 0 ? -0.1 : 0.1);
   });
 
-  // Touch support for mobile
-  let touchStartX = 0;
-  let touchEndX = 0;
-  let currentIndex = 0;
-  
+  // Mobile carousel initialization
   function initMobileCarousel() {
+    if (window.innerWidth > 600) return;
     const cards = document.querySelectorAll('.packet-card');
-    updateCarouselPosition(cards);
-  }
-
-  function updateCarouselPosition(cards, animate = false) {
-    cards.forEach((card, index) => {
-      card.style.transition = animate ? 'transform 0.3s ease' : 'none';
-      const offset = (index - currentIndex) * 100;
-      card.style.transform = `translateX(${offset}%)`;
-      card.style.opacity = Math.abs(offset) > 100 ? '0' : '1';
+    cards.forEach(card => {
+      card.classList.add('visible');
+      card.style.transform = 'none';
+      card.style.opacity = '1';
     });
   }
 
-  carousel.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-    carousel.querySelectorAll('.packet-card').forEach(card => {
-      card.style.transition = 'none';
+  // Listen for scroll events to handle snap points
+  carousel.addEventListener('scroll', () => {
+    if (window.innerWidth > 600) return;
+    const cards = document.querySelectorAll('.packet-card');
+    if (!cards.length) return;
+    
+    requestAnimationFrame(() => {
+      const cardWidth = cards[0].offsetWidth + 24; // Include gap
+      const scrollPosition = carousel.scrollLeft;
+      const currentIndex = Math.round(scrollPosition / cardWidth);
+      
+      cards.forEach((card, index) => {
+        if (index === currentIndex) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
     });
   });
 
-  carousel.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    const currentX = e.changedTouches[0].screenX;
-    const diff = currentX - touchStartX;
-    const cards = carousel.querySelectorAll('.packet-card');
-    const percentageMoved = (diff / window.innerWidth) * 100;
-    
-    cards.forEach((card, index) => {
-      const baseOffset = (index - currentIndex) * 100;
-      card.style.transform = `translateX(${baseOffset + percentageMoved}%)`;
-    });
-  });
-
-  carousel.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    const deltaX = touchEndX - touchStartX;
-    const cards = carousel.querySelectorAll('.packet-card');
-    
-    if (Math.abs(deltaX) > 50) {
-      currentIndex += deltaX > 0 ? -1 : 1;
-      currentIndex = Math.max(0, Math.min(currentIndex, cards.length - 1));
+  function handleMobileLayout() {
+    if (window.innerWidth <= 600) {
+      initMobileCarousel();
     }
-    
-    updateCarouselPosition(cards, true);
-  });
-
-  // Initialize mobile layout if needed
-  if (window.innerWidth <= 768) {
-    initMobileCarousel();
   }
+
+  window.addEventListener('resize', handleMobileLayout);
 
   // Carousel controls
   prevBtn.addEventListener('click', () => rotateCarousel(1));
@@ -141,22 +124,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function positionPackets() {
-    const packetCards = document.querySelectorAll('.packet-card');
-    const totalPackets = packetCards.length;
-    const angleStep = (2 * Math.PI) / totalPackets;
+  const packetCards = document.querySelectorAll('.packet-card');
+  const totalPackets = packetCards.length;
+  const angleStep = (2 * Math.PI) / totalPackets;
 
-    packetCards.forEach((card, index) => {
-      const angle = index * angleStep + currentAngle;
-      const x = Math.sin(angle) * radius;
-      const z = Math.cos(angle) * radius;
-      card.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${angle * (180/Math.PI)}deg)`;
+  if (window.innerWidth <= 600) {
+    packetCards.forEach(card => {
+      card.style.transform = 'none';
+      card.style.opacity = '1';
       card.classList.add('visible');
-
-      // Adjust opacity based on z position
-      const normalizedZ = (z + radius) / (2 * radius);
-      card.style.opacity = normalizedZ * 0.5 + 0.5;
     });
+    return;
   }
+
+  packetCards.forEach((card, index) => {
+    const angle = index * angleStep + currentAngle;
+    const x = Math.sin(angle) * radius;
+    const z = Math.cos(angle) * radius;
+    card.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${angle * (180/Math.PI)}deg)`;
+    card.classList.add('visible');
+
+    const normalizedZ = (z + radius) / (2 * radius);
+    card.style.opacity = normalizedZ * 0.5 + 0.5;
+  });
+}
 
   function rotateCarousel(direction) {
     currentAngle += direction * (Math.PI / 8);
