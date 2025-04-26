@@ -18,18 +18,48 @@ body {
 /* Header */
 header {
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 1rem 0; /* Increased padding for better text placement */
   background: linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9));
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  position: relative;
+  position: fixed;
+  width: 100%;
+  top: 0;
   z-index: 10;
+  height: 50px; /* Matched footer height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center content vertically */
 }
 
 @supports (backdrop-filter: blur(15px)) {
   header {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(15px);
   }
+}
+
+header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(45deg, #6366f1, #8b5cf6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: bold;
+}
+
+header p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+}
+
+
+.brand {
+  background: linear-gradient(45deg, #f3ec78, #af4261);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: bold;
 }
 
 /* Carousel Container */
@@ -38,7 +68,7 @@ header {
   -webkit-perspective: 1000px;
   width: 100%;
   max-width: 1000px;
-  margin: 10rem auto 2rem;
+  margin: 14rem auto 2rem;
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -75,6 +105,8 @@ header {
   cursor: pointer;
   opacity: 0;
 }
+
+
 
 @supports (backdrop-filter: blur(20px)) {
   .packet-card {
@@ -336,6 +368,12 @@ footer {
   padding: 1rem;
   background: linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9));
   margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  height: 50px; /* Matched header height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @supports (backdrop-filter: blur(15px)) {
@@ -353,53 +391,127 @@ footer p {
 /* Mobile Optimization */
 @media screen and (max-width: 600px), (hover: none) {
   .carousel-container {
-    min-height: 320px;
-    margin: 1rem auto;
-    overflow: hidden;
+    min-height: 200vh;
+    margin: 0;
     width: 100%;
-    padding: 0;
+    padding: 40px 0;
+    perspective: none;
+    display: flex;
+    align-items: center;
   }
 
   .packets-carousel {
     display: flex;
-    overflow-x: auto;
+    overflow-x: scroll;
     overflow-y: hidden;
     width: 100%;
-    height: 320px;
-    touch-action: pan-x;
+    height: fit-content;
+    padding: 40px;
+    gap: 20px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    cursor: grab;
+    scroll-behavior: smooth;
+    transform-style: flat;
+    background: linear-gradient(to right, rgba(0,0,0,0.1), transparent 15px, transparent 85%, rgba(0,0,0,0.1));
+    cursor: grab;
     -webkit-user-select: none;
     user-select: none;
-    align-items: center;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-    padding: 0 calc(50% - 100px);
-    gap: 24px;
+    touch-action: pan-x;
+  }
+
+  .packets-carousel::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .packets-carousel::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+  }
+
+  .packets-carousel::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
   }
 
   .packet-card {
     flex: 0 0 auto;
-    width: 200px;
-    min-width: 200px;
-    max-width: 200px;
-    height: 280px;
+    width: 80vw;
+    max-width: 280px;
+    min-width: 220px;
+    height: auto;
+    min-height: 280px;
     scroll-snap-align: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0.5;
-    transform: scale(0.9);
+    position: relative;
+    transform: none !important;
+    opacity: 1;
+    margin: 10px 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.05);
+    z-index: 1;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .packet-card:active {
+    cursor: grabbing;
+    transform: scale(0.98) !important;
+  }
+
+  .packet-card.active {
+    transform: scale(1.02) !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    z-index: 2;
   }
 
   .packet-card.active {
     opacity: 1;
-    transform: scale(1);
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.2);
   }
 
-  .packet-card:hover {
-    transform: translateY(-5px);
+  .packet-card img {
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin: 0;
+  }
+
+  .packet-card h2 {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  .packet-card p {
+    margin: 0;
+    font-size: 0.9rem;
   }
 
   .carousel-controls {
     display: none;
+  }
+
+  /* Add scroll indicator */
+  .carousel-container::after {
+    content: '';
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    animation: scrollIndicator 2s infinite;
+  }
+
+  @keyframes scrollIndicator {
+    0%, 100% { transform: translateX(-70%); }
+    50% { transform: translateX(-30%); }
   }
 }
 
